@@ -2,8 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, Text
 from sqlalchemy.sql import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-
-Base = declarative_base()
+from app.database import Base
 
 class Tag(Base):
     __tablename__ = "tags"
