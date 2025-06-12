@@ -8,6 +8,7 @@ from alembic import context
 # Import the necessary environment variables
 import os
 from dotenv import load_dotenv
+from app import models
 from app.database import Base
 load_dotenv()
 # target_metadata = Base.metadata
