@@ -1,33 +1,62 @@
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from app.database import get_db
+from app.auth.hashing import hash_password
 from app.models import User
-from app.schemas.user import LoginRequest, TokenResponse, UserCreate, UserResponse
-from app.auth.hashing import hash_password, verify_password
-from app.auth.jwt import create_access_token
+from app.schemas.user import UserCreate, UserRead
+import uuid
+from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
+from app.auth.hashing import verify_password
+from app.auth.jwt import create_access_token
+from app.services.email import send_verification_email
 
 router = APIRouter()
 
-@router.post("/register", response_model=UserResponse)
+@router.post("/register", response_model=UserRead)
 def register(user: UserCreate, db: Session = Depends(get_db)):
-  check_email = db.query(User).filter(User.email == user.email).first()
-  check_username = db.query(User).filter(User.username == user.username).first()
-  if check_email:
+  # Check existing username and email
+  if db.query(User).filter(User.email == user.email).first():
     raise HTTPException(status_code=400, detail="Email already registered")
-  if check_username:
-    raise HTTPException(status_code=400, detail="Username already exsist")
-  user_data = User(**user.dict(exclude={"password"}), password=hash_password(user.password))
-  db.add(user_data)
+  if db.query(User).filter(User.username == user.username).first():
+    raise HTTPException(status_code=400, detail="Username already exists")
+  # Generate verification token
+  verification_token = str(uuid.uuid4())
+  new_user = User(
+    username=user.username,
+    email=user.email,
+    password=hash_password(user.password),
+    full_name=user.username,
+    is_verified=False,
+    verification_token=verification_token
+  )
+  db.add(new_user)
   db.commit()
-  db.refresh(user_data)
-  return user_data
+  db.refresh(new_user)
+  # Send verification email
+  send_verification_email(
+    email=user.email,
+    token=verification_token
+  )
+  return new_user
 
-@router.post("/login", response_model=TokenResponse)
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-  user = db.query(User).filter(User.username == form_data.username).first()
-  if not user or not verify_password(form_data.password, user.password):
-    raise HTTPException(status_code=401, detail="Invalid credentials")
-  access_token = create_access_token(data={"sub": user.username}, expires_delta=timedelta(hours=1))
-  return {"access_token": access_token, "token_type": "bearer"}
+@router.post("/verify-email/{token}", response_model=UserRead)
+def verify_email(token: str, db: Session = Depends(get_db)):
+  user = db.query(User).filter(User.verification_token == token).first()
+  if not user:
+    raise HTTPException(status_code=400, detail="Invalid or expired token")
+  user.is_verified = True
+  user.verification_token = None
+  db.commit()
+  db.refresh(user)
+  print(user.__dict__)
+  return user
+
+
+# @router.post("/login", response_model=TokenResponse)
+# async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+#   user = db.query(User).filter(User.username == form_data.username).first()
+#   if not user or not verify_password(form_data.password, user.password):
+#     raise HTTPException(status_code=401, detail="Invalid credentials")
+#   access_token = create_access_token(data={"sub": user.username}, expires_delta=timedelta(hours=1))
+#   return {"access_token": access_token, "token_type": "bearer"}

@@ -29,3 +29,5 @@ class User(Base):
     collections = relationship("Collection", back_populates="user")
     reports = relationship("Report", back_populates="reporter")
     notifications = relationship("Notification", back_populates="user")
+
+
