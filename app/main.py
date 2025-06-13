@@ -17,10 +17,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 # include routers
-app.include_router(auth.router, prefix="api/v1/auth", tags=["Authentication"])
-# app.include_router(users.router, prefix="api/v1/user", tags=["User"])
-# app.include_router(poems.router, prefix="api/v1/poem", tags=["Poem"])
-# app.include_router(collections.router, prefix="api/v1/collection", tags=["Collection"])
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
+# app.include_router(users.router, prefix="/api/v1/user", tags=["User"])
+# app.include_router(poems.router, prefix="/api/v1/poem", tags=["Poem"])
+# app.include_router(collections.router, prefix="/api/v1/collection", tags=["Collection"])
 
 @app.get("/")
 async def read_root():

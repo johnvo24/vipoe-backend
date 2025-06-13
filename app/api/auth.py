@@ -9,7 +9,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
 from app.auth.hashing import verify_password
 from app.auth.jwt import create_access_token
-from app.services.email import send_verification_email
+from app.services.email import send_verification_email, create_email_verification_token
 
 router = APIRouter()
 
@@ -21,12 +21,12 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
   if db.query(User).filter(User.username == user.username).first():
     raise HTTPException(status_code=400, detail="Username already exists")
   # Generate verification token
-  verification_token = str(uuid.uuid4())
+  verification_token = create_email_verification_token(user.email)
   new_user = User(
     username=user.username,
     email=user.email,
     password=hash_password(user.password),
-    full_name=user.username,
+    full_name=user.full_name,
     is_verified=False,
     verification_token=verification_token
   )

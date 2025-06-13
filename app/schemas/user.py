@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 class UserCreate(BaseModel):
+  full_name: str = Field(..., min_length=1, max_length=100)
   username: str = Field(..., min_length=6, max_length=50)
   email: EmailStr
   password: str = Field(..., min_length=8)
