@@ -1,15 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
-from sqlalchemy.orm import Session
-from app.database import get_db
-from app.auth.hashing import hash_password
-from app.models import User
-from app.schemas.user import UserCreate, UserRead
-import uuid
-from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
-from app.auth.hashing import verify_password
-from app.auth.jwt import create_access_token
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
+from app.models import User
+from app.schemas.token import TokenResponse
+from app.schemas.user import UserCreate, UserRead
+from app.database import get_db
 from app.services.email import send_verification_email, create_email_verification_token
+from app.utils.hash_utils import hash_password, verify_password
+from app.utils.jwt_utils import create_jwt_token
+from app.core.config import settings
 
 router = APIRouter()
 
@@ -53,10 +53,18 @@ def verify_email(token: str, db: Session = Depends(get_db)):
   return user
 
 
-# @router.post("/login", response_model=TokenResponse)
-# async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-#   user = db.query(User).filter(User.username == form_data.username).first()
-#   if not user or not verify_password(form_data.password, user.password):
-#     raise HTTPException(status_code=401, detail="Invalid credentials")
-#   access_token = create_access_token(data={"sub": user.username}, expires_delta=timedelta(hours=1))
-#   return {"access_token": access_token, "token_type": "bearer"}
+@router.post("/login", response_model=TokenResponse)
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+  user = db.query(User).filter(
+    (User.username == form_data.username) | (User.email == form_data.username)
+  ).first()
+  if not user or not verify_password(form_data.password, user.password):
+    raise HTTPException(status_code=401, detail="Invalid credentials")
+  if not user.is_verified:
+    raise HTTPException(status_code=403, detail="Email not verified")
+  access_token = create_jwt_token(
+    payload={"sub": user.id},
+    secret_key=settings.SECRET_KEY,
+    expires_delta=timedelta(hours=1)
+  )
+  return {"access_token": access_token, "token_type": "bearer"}
