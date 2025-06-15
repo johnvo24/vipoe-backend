@@ -1,14 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import User
-from app.schemas.user import UserUpdate, UserResponse, ShowWriterResponse
-from app.auth.jwt import create_access_token
+from app.schemas.user import UserUpdate, UserRead
+from app.utils.cloud_utils import upload_image_to_cloud
+from app.utils.jwt_utils import create_jwt_token
 from app.auth.dependencies import get_current_user
 
 router = APIRouter()
 
-@router.put("/profile", response_model=UserResponse)
+@router.put("/profile", response_model=UserRead)
 def update_profile(
   update_data: UserUpdate,
   db: Session = Depends(get_db),
@@ -25,31 +26,51 @@ def update_profile(
   db.refresh(user)
   return user
 
-@router.get("/me", response_model=UserResponse)
-def get_all(
+@router.put("/profile/avatar", response_model=UserRead)
+async def update_avatar(
+  avatar: UploadFile = File(...),
   db: Session = Depends(get_db),
   current_user: User = Depends(get_current_user)
 ):
-  return current_user
+  user = db.query(User).filter(User.id == current_user.id).first()
+  if not user:
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
-@router.get("/show-writers", response_model=list[ShowWriterResponse])
-async def get_all_writers(
-  db: Session = Depends(get_db)
-):
-  writers = (
-    db.query(
-      User.id.label("user_id"),
-      User.full_name.label("full_name")
-    ).all()
-  )
+  try:
+    avatar_url = await upload_image_to_cloud(avatar)
+    user.avt_url = avatar_url
+  except Exception as e:
+    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error uploading avatar: {str(e)}")
+  
+  db.commit()
+  db.refresh(user)
+  return user
 
-  result = [
-    {
-      "user_id": item.user_id,
-      "full_name": item.full_name,
-      "avatar": "https://upload.wikimedia.org/wikipedia/commons/2/21/Johnny_Depp_2020.jpg"
-    }
-    for item in writers
-  ]
+# @router.get("/me", response_model=UserRead)
+# def get_all(
+#   db: Session = Depends(get_db),
+#   current_user: User = Depends(get_current_user)
+# ):
+#   return current_user
 
-  return result
+# @router.get("/show-writers", response_model=list[ShowWriterResponse])
+# async def get_all_writers(
+#   db: Session = Depends(get_db)
+# ):
+#   writers = (
+#     db.query(
+#       User.id.label("user_id"),
+#       User.full_name.label("full_name")
+#     ).all()
+#   )
+
+#   result = [
+#     {
+#       "user_id": item.user_id,
+#       "full_name": item.full_name,
+#       "avatar": "https://upload.wikimedia.org/wikipedia/commons/2/21/Johnny_Depp_2020.jpg"
+#     }
+#     for item in writers
+#   ]
+
+#   return result

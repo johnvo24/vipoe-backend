@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -49,7 +49,6 @@ def verify_email(token: str, db: Session = Depends(get_db)):
   user.verification_token = None
   db.commit()
   db.refresh(user)
-  print(user.__dict__)
   return user
 
 
@@ -63,8 +62,12 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
   if not user.is_verified:
     raise HTTPException(status_code=403, detail="Email not verified")
   access_token = create_jwt_token(
-    payload={"sub": user.id},
+    payload={"sub": user.username},
     secret_key=settings.SECRET_KEY,
     expires_delta=timedelta(hours=1)
   )
+  user.verification_token = access_token
+  user.last_login = datetime.now(timezone.utc)
+  db.commit()
+  db.refresh(user)
   return {"access_token": access_token, "token_type": "bearer"}
