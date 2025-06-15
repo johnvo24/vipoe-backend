@@ -6,6 +6,7 @@ class Settings(BaseSettings):
   MAIL_USER: str
   MAIL_PASS: str
   SECRET_KEY: str
+  CLOUDINARY_URL: str
 
   class Config:
     env_file = ".env"

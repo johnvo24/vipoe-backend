@@ -1,5 +1,5 @@
 from jose import jwt, ExpiredSignatureError, JWTError
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 def create_jwt_token(
     payload: dict,
@@ -9,7 +9,7 @@ def create_jwt_token(
 ) -> str:
     data = payload.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
         data["exp"] = int(expire.timestamp())
     return jwt.encode(data, secret_key, algorithm=algorithm)
 
