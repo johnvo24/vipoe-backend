@@ -2,8 +2,7 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
 from sqlalchemy.sql import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-
-Base = declarative_base()
+from app.database import Base
 
 class User(Base):
     __tablename__ = "users"
@@ -30,3 +29,5 @@ class User(Base):
     collections = relationship("Collection", back_populates="user")
     reports = relationship("Report", back_populates="reporter")
     notifications = relationship("Notification", back_populates="user")
+
+

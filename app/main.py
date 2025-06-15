@@ -1,26 +1,16 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from app.api import auth
-from app.api import users
-from app.api import poems
-from app.api import collections
+from app.core.config import settings
+from app.core.middleware import setup_cors
+from app.api.router import router
 
-app = FastAPI()
+def create_app():
+    app = FastAPI()
+    setup_cors(app, settings.FRONTEND_URL)
+    app.include_router(router)
+    return app
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# include routers
-app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
-app.include_router(users.router, prefix="/user", tags=["User"])
-app.include_router(poems.router, prefix="/poem", tags=["Poem"])
-app.include_router(collections.router, prefix="/collection", tags=["Collection"])
+app = create_app()
 
 @app.get("/")
 async def read_root():
-    return {"message": "Hello, FastAPI!"}
+    return {"message": "Welcome to Vipoe backend!"}
