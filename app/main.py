@@ -1,27 +1,15 @@
-import os
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from app.api import auth
-# from app.api import users
-from app.api import poems
-from app.api import collections
-from dotenv import load_dotenv
+from app.core.config import settings
+from app.core.middleware import setup_cors
+from app.api.router import router
 
-load_dotenv()
-app = FastAPI()
+def create_app():
+    app = FastAPI()
+    setup_cors(app, settings.FRONTEND_URL)
+    app.include_router(router)
+    return app
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[f"{os.getenv('FRONTEND_URL')}", "http://127.0.0.1:3000"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-# include routers
-app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
-# app.include_router(users.router, prefix="/api/v1/user", tags=["User"])
-# app.include_router(poems.router, prefix="/api/v1/poem", tags=["Poem"])
-# app.include_router(collections.router, prefix="/api/v1/collection", tags=["Collection"])
+app = create_app()
 
 @app.get("/")
 async def read_root():
