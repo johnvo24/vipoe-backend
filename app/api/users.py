@@ -9,6 +9,16 @@ from app.auth.dependencies import get_current_user
 
 router = APIRouter()
 
+@router.get("/profile", response_model=UserRead)
+def get_profile(
+  db: Session = Depends(get_db),
+  current_user: User = Depends(get_current_user)
+):
+  user = db.query(User).filter(User.id == current_user.id).first()
+  if not user:
+    raise HTTPException(status_code=404, detail="User not found")
+  return user
+
 @router.put("/profile", response_model=UserRead)
 def update_profile(
   update_data: UserUpdate,
