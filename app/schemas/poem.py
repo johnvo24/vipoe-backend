@@ -18,16 +18,6 @@ class TagResponse(BaseModel):
     orm_mode = True
     from_attributes = True
 
-class PoemCreate(BaseModel):
-  genre_id: int
-  prompt: str
-  title: str
-  image_url: Optional[str] = None
-  content: str
-  note: Optional[str] = None
-  tags: Optional[List[str]] = []
-  is_public: Optional[bool] = True
-
 class PoemBaseResponse(BaseModel):
   id: int
   genre_id: int
