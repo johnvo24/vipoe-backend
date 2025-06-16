@@ -30,7 +30,7 @@ class UserRead(BaseModel):
 class UserUpdate(BaseModel):
   full_name: Optional[str] = Field(None, min_length=1, max_length=100)
   # email: Optional[EmailStr] = None
-  avt_url: Optional[str] = None
+  # avt_url: Optional[str] = None
   bio: Optional[str] = None
   phone: Optional[str] = None
   location: Optional[str] = None
