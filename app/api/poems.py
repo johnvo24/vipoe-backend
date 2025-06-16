@@ -5,6 +5,7 @@ from app.schemas.poem import PoemBaseResponse, PoemResponse, GenreResponse, TagR
 from app.models import Poem, User, Genre, Tag, PoemTag
 from app.auth.dependencies import get_current_user
 from app.utils.cloud_utils import upload_image_to_cloud
+from datetime import datetime, timezone
 
 router = APIRouter()
 
@@ -74,3 +75,62 @@ async def create_poem(
     genre_name=genre.name if genre else "",
     tags=[TagResponse.model_validate(tag) for tag in tag_objs]
   )
+
+@router.put("/{poem_id}", response_model=PoemResponse)
+async def update_poem(
+  poem_id: int,
+  genre_id: int = Form(None),
+  prompt: str = Form(None),
+  title: str = Form(None),
+  content: str = Form(None),
+  note: str = Form(None),
+  tags: str = Form(None),
+  is_public: bool = Form(None),
+  image: UploadFile = File(None),
+  db: Session = Depends(get_db),
+  current_user: User = Depends(get_current_user)
+):
+  poem = db.query(Poem).filter(Poem.id == poem_id, Poem.user_id == current_user.id).first()
+  if not poem:
+    raise HTTPException(status_code=404, detail="Poem not found")
+
+  if genre_id is not None: poem.genre_id = genre_id
+  if prompt is not None: poem.prompt = prompt
+  if title is not None: poem.title = title
+  if content is not None: poem.content = content
+  if note is not None: poem.note = note
+  if is_public is not None: poem.is_public = is_public
+  if image: poem.image_url = await upload_image_to_cloud(image, folder="vipoe/poem_images")
+  tag_objs = []
+  if tags is not None:
+    tag_list = [t.strip() for t in tags.split("#") if t.strip()]
+    db.query(PoemTag).filter(PoemTag.poem_id == poem.id).delete()
+    db.flush()
+    if tag_list:
+      existing_tags = db.query(Tag).filter(Tag.name.in_(tag_list)).all()
+      existing_tag_names = {tag.name for tag in existing_tags}
+      new_tag_names = set(tag_list) - existing_tag_names
+      for name in new_tag_names:
+        new_tag = Tag(name=name)
+        db.add(new_tag)
+        db.flush()
+        existing_tags.append(new_tag)
+      for tag in existing_tags:
+        poem_tag = PoemTag(poem_id=poem.id, tag_id=tag.id)
+        db.add(poem_tag)
+        tag_objs.append(tag)
+    else:
+      tag_objs = [pt.tag for pt in poem.poem_tags]
+
+    poem.updated_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(poem)
+
+
+    genre = db.query(Genre).filter(Genre.id == poem.genre_id).first()
+    poem_base_response = PoemBaseResponse.model_validate(poem)
+    return PoemResponse(
+        **poem_base_response.model_dump(),
+        genre_name=genre.name if genre else "",
+        tags=[TagResponse.model_validate(tag) for tag in tag_objs]
+    )
