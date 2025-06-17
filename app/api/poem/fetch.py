@@ -9,13 +9,13 @@ from app.schemas.poem import PoemBaseResponse, PoemResponse, GenreResponse, TagR
 from app.models import Poem, Genre, Tag, PoemTag
 from typing import Optional
 from sqlalchemy import func, or_
-
 from app.services.poem_service import build_poem_response
 
 router = APIRouter()
 
 @router.get("/genres", response_model=list[GenreResponse])
 def get_genres(db: Session = Depends(get_db)):
+  print("Fetching genres")
   return db.query(Genre).all()
 
 @router.get("/tags", response_model=list[TagResponse])
