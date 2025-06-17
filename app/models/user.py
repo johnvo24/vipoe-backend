@@ -26,7 +26,7 @@ class User(Base):
     poems = relationship("Poem", back_populates="user")
     comments = relationship("Comment", back_populates="user")
     poem_likes = relationship("PoemLike", back_populates="user")
-    collections = relationship("Collection", back_populates="user")
+    collection_poems = relationship("CollectionPoem", back_populates="user")
     reports = relationship("Report", back_populates="reporter")
     notifications = relationship("Notification", back_populates="user")
 

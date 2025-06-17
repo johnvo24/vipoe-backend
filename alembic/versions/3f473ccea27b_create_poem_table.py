@@ -1,8 +1,8 @@
-"""Init database
+"""Create Poem table
 
-Revision ID: 0ebebf4fd523
+Revision ID: 3f473ccea27b
 Revises: 
-Create Date: 2025-06-12 03:07:29.008345
+Create Date: 2025-06-17 11:19:26.451213
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '0ebebf4fd523'
+revision: str = '3f473ccea27b'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -32,7 +32,6 @@ def upgrade() -> None:
     op.create_table('tags',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('name', sa.String(), nullable=False),
-    sa.Column('description', sa.Text(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
@@ -58,14 +57,6 @@ def upgrade() -> None:
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
     op.create_index(op.f('ix_users_id'), 'users', ['id'], unique=False)
     op.create_index(op.f('ix_users_username'), 'users', ['username'], unique=True)
-    op.create_table('collections',
-    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('notifications',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
@@ -95,10 +86,11 @@ def upgrade() -> None:
     op.create_index(op.f('ix_poems_id'), 'poems', ['id'], unique=False)
     op.create_table('collection_poems',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('collection_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('poem_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['collection_id'], ['collections.id'], ),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['poem_id'], ['poems.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('comments',
@@ -154,7 +146,6 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_poems_id'), table_name='poems')
     op.drop_table('poems')
     op.drop_table('notifications')
-    op.drop_table('collections')
     op.drop_index(op.f('ix_users_username'), table_name='users')
     op.drop_index(op.f('ix_users_id'), table_name='users')
     op.drop_index(op.f('ix_users_email'), table_name='users')
