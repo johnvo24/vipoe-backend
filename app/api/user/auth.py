@@ -6,7 +6,7 @@ from app.models import User
 from app.schemas.token import TokenResponse
 from app.schemas.user import UserCreate, UserRead
 from app.database import get_db
-from app.services.email import send_verification_email, create_email_verification_token
+from app.services.email_service import send_verification_email, create_email_verification_token
 from app.utils.hash_utils import hash_password, verify_password
 from app.utils.jwt_utils import create_jwt_token
 from app.core.config import settings
@@ -70,4 +70,5 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
   user.last_login = datetime.now(timezone.utc)
   db.commit()
   db.refresh(user)
+  print(f"User {user.username} logged in at {user.last_login}")
   return {"access_token": access_token, "token_type": "bearer"}
