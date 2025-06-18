@@ -35,6 +35,9 @@ class PoemBaseResponse(BaseModel):
     from_attributes = True
 
 class PoemResponse(PoemBaseResponse):
+  user_name: str
+  full_name: str
+  avt_url: Optional[str] = None
   genre_name: str
   tags: List[TagResponse] = []
 

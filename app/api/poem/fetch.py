@@ -31,7 +31,9 @@ def search_poems(
   offset: int = 0,
   limit: int = 20,
 ):
-  query = db.query(Poem).filter(Poem.is_public == True)
+  query = db.query(Poem).options(
+    joinedload(Poem.genre), joinedload(Poem.poem_tags), joinedload(Poem.user)
+  ).filter(Poem.is_public == True)
 
   if keyword:
     query = query.filter(
@@ -51,57 +53,24 @@ def search_poems(
         query = query.join(PoemTag, Poem.poem_tags).join(Tag).filter(Tag.name == tag_name)
 
   poems = query.order_by(Poem.created_at.desc()).offset(offset).limit(limit).all()
-
-  result = []
-  for poem in poems:
-    genre = db.query(Genre).filter(Genre.id == poem.genre_id).first()
-    poem_base_response = PoemBaseResponse.model_validate(poem)
-    result.append(
-      PoemResponse(
-        **poem_base_response.model_dump(),
-        genre_name=genre.name if genre else "",
-        tags=[TagResponse.model_validate(pt.tag) for pt in poem.poem_tags],
-      )
-    )
-  return result
+  return [build_poem_response(poem) for poem in poems]
 
 @router.get("/feed", response_model=List[PoemResponse])
 def get_poem_feed(
-    db: Session = Depends(get_db),
-    offset: int = 0,
-    limit: int = 20,
+  db: Session = Depends(get_db),
+  offset: int = 0,
+  limit: int = 20,
 ):
   poems = (
     db.query(Poem)
+    .options(joinedload(Poem.genre), joinedload(Poem.poem_tags), joinedload(Poem.user))
     .filter(Poem.is_public == True)
     .order_by(Poem.created_at.desc())
     .offset(offset)
     .limit(limit)
     .all()
   )
-
-  poem_ids = [poem.id for poem in poems]
-  likes_counts = dict(
-    db.query(PoemLike.poem_id, func.count(PoemLike.id))
-      .filter(PoemLike.poem_id.in_(poem_ids))
-      .group_by(PoemLike.poem_id)
-      .all()
-  )
-
-  result = []
-  for poem in poems:
-    genre = db.query(Genre).filter(Genre.id == poem.genre_id).first()
-    poem_base_response = PoemBaseResponse.model_validate(poem)
-    poem_data = poem_base_response.model_dump()
-    poem_data["likes_count"] = likes_counts.get(poem.id, 0)
-    result.append(
-      PoemResponse(
-        **poem_data,
-        genre_name=genre.name if genre else "",
-        tags=[TagResponse.model_validate(pt.tag) for pt in poem.poem_tags],
-      )
-    )
-  return result
+  return [build_poem_response(poem) for poem in poems]
 
 @router.get("/", response_model=List[PoemResponse])
 def get_my_poems(
@@ -112,11 +81,12 @@ def get_my_poems(
 ):
   poems = (
     db.query(Poem).options(
-      joinedload(Poem.genre), joinedload(Poem.poem_tags)
+      joinedload(Poem.genre), joinedload(Poem.poem_tags), joinedload(Poem.user)
     ).filter(Poem.user_id == current_user.id)
     .order_by(Poem.created_at.desc())
     .offset(offset)
     .limit(limit)
     .all()
   )
+  print(poems[0].__dict__)
   return [build_poem_response(poem) for poem in poems]

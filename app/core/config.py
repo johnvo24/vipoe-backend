@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
+  # SECURE_COOKIES: bool
   DATABASE_URL: str = "postgresql://johnvo:johnjohn@db:5432/vipoedb"
   FRONTEND_URL: str = "http://localhost:3000"
   MAIL_USER: str

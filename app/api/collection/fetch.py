@@ -21,7 +21,7 @@ def get_poems_in_collection(
   poem_ids = [cp.poem_id for cp in collection]
   poems = (
     db.query(Poem).options(
-      joinedload(Poem.genre), joinedload(Poem.poem_tags)
+      joinedload(Poem.genre), joinedload(Poem.poem_tags), joinedload(Poem.user)
     ).filter(Poem.id.in_(poem_ids)).all()
   )
   return [build_poem_response(poem) for poem in poems]
