@@ -1,7 +1,7 @@
 from typing import Optional
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt, JWTError
+from jose import ExpiredSignatureError, JWTError
 from sqlalchemy .orm import Session
 from app.database import get_db
 from app.models import User
@@ -34,4 +34,30 @@ def get_current_user(
   if not user:
     raise HTTPException(status_code=401, detail="User not found")
   
+  return user
+
+def get_current_user_optional(
+  request: Request, 
+  db: Session = Depends(get_db)
+) -> Optional[User]:
+  authorization = request.headers.get("Authorization")
+  token = None
+  if authorization and authorization.startswith("Bearer "):
+    token = authorization.split(" ")[1]
+  else:
+    token = request.cookies.get("vipoe_access_token")
+  
+  if not token:
+    return None
+  
+  try:
+    payload = decode_and_verify_token(token, settings.SECRET_KEY)
+    username: str = payload.get("sub")
+    print(f"Decoded username: {username}")
+    if not username:
+      return {"status": "invalid_token"}
+  except Exception as e:
+    raise HTTPException(status_code=401, detail=f"{e}")
+  
+  user = db.query(User).filter(User.username == username).first()
   return user

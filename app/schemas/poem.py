@@ -40,6 +40,7 @@ class PoemResponse(PoemBaseResponse):
   avt_url: Optional[str] = None
   genre_name: str
   tags: List[TagResponse] = []
+  is_saved: bool = False
 
   class Config:
     orm_mode = True
