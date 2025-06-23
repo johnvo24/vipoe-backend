@@ -21,22 +21,23 @@ def handle_tags(db: Session, poem_id: int, tags: str):
       tag_objs.append(tag)
   return tag_objs
 
-def build_poem_response(poem: Any) -> PoemResponse:
-    return PoemResponse(
-      id = poem.id,
-      genre_id = poem.genre.id,
-      genre_name = poem.genre.name,
-      user_id = poem.user.id,
-      user_name = poem.user.username,
-      full_name = poem.user.full_name,
-      avt_url = poem.user.avt_url,
-      prompt = poem.prompt,
-      title = poem.title,
-      image_url = poem.image_url,
-      content = poem.content,
-      note = poem.note,
-      is_public = poem.is_public,
-      created_at = poem.created_at,
-      updated_at = poem.updated_at,
-      tags = [TagResponse.model_validate(pt.tag) for pt in poem.poem_tags]
-    )
+def build_poem_response(poem: Any, is_saved = False) -> PoemResponse:
+  return PoemResponse(
+    id = poem.id,
+    genre_id = poem.genre.id,
+    genre_name = poem.genre.name,
+    user_id = poem.user.id,
+    user_name = poem.user.username,
+    full_name = poem.user.full_name,
+    avt_url = poem.user.avt_url,
+    prompt = poem.prompt,
+    title = poem.title,
+    image_url = poem.image_url,
+    content = poem.content,
+    note = poem.note,
+    is_public = poem.is_public,
+    created_at = poem.created_at,
+    updated_at = poem.updated_at,
+    tags = [TagResponse.model_validate(pt.tag) for pt in poem.poem_tags],
+    is_saved = is_saved,
+  )
