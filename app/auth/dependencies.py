@@ -1,7 +1,7 @@
 from typing import Optional
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import ExpiredSignatureError, JWTError
+from jose import JWTError
 from sqlalchemy .orm import Session
 from app.database import get_db
 from app.models import User
@@ -53,7 +53,6 @@ def get_current_user_optional(
   try:
     payload = decode_and_verify_token(token, settings.SECRET_KEY)
     username: str = payload.get("sub")
-    print(f"Decoded username: {username}")
     if not username:
       return {"status": "invalid_token"}
   except Exception as e:

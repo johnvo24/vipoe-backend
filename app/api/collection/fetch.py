@@ -13,6 +13,8 @@ router = APIRouter()
 @router.get("/", status_code=status.HTTP_200_OK, response_model=List[PoemResponse])
 def get_poems_in_collection(
   db: Session = Depends(get_db),
+  offset: int = 0,
+  limit: int = 20,
   current_user = Depends(get_current_user)
 ):
   collection = db.query(CollectionPoem).filter_by(user_id=current_user.id).all()
@@ -20,8 +22,11 @@ def get_poems_in_collection(
     raise HTTPException(status_code=404, detail="No poems found in collection")
   poem_ids = [cp.poem_id for cp in collection]
   poems = (
-    db.query(Poem).options(
-      joinedload(Poem.genre), joinedload(Poem.poem_tags), joinedload(Poem.user)
-    ).filter(Poem.id.in_(poem_ids)).all()
+    db.query(Poem)
+    .options(joinedload(Poem.genre), joinedload(Poem.poem_tags), joinedload(Poem.user))
+    .filter(Poem.id.in_(poem_ids))
+    .offset(offset)
+    .limit(limit)
+    .all()
   )
-  return [build_poem_response(poem) for poem in poems]
+  return [build_poem_response(poem, is_saved=True) for poem in poems]

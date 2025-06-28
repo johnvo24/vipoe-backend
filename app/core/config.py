@@ -8,6 +8,9 @@ class Settings(BaseSettings):
   MAIL_PASS: str
   SECRET_KEY: str
   CLOUDINARY_URL: str
+  GEMINI_API_KEY: str
+  GOOGLE_API_KEY: str
+  SEARCH_ENGINE_ID: str
 
   class Config:
     env_file = ".env"
