@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -31,6 +32,7 @@ def update_profile(
   
   for field, value in update_data.dict(exclude_unset=True).items():
     setattr(user, field, value)
+  user.updated_at = datetime.now(timezone.utc)
 
   db.commit()
   db.refresh(user)
@@ -49,19 +51,13 @@ async def update_avatar(
   try:
     avatar_url = await upload_image_to_cloud(avatar)
     user.avt_url = avatar_url
+    user.updated_at = datetime.now(timezone.utc)
   except Exception as e:
     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error uploading avatar: {str(e)}")
   
   db.commit()
   db.refresh(user)
   return user
-
-# @router.get("/me", response_model=UserRead)
-# def get_all(
-#   db: Session = Depends(get_db),
-#   current_user: User = Depends(get_current_user)
-# ):
-#   return current_user
 
 # @router.get("/show-writers", response_model=list[ShowWriterResponse])
 # async def get_all_writers(

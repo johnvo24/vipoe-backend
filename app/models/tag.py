@@ -8,7 +8,6 @@ class Tag(Base):
     __tablename__ = "tags"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
-    description = Column(Text, nullable=True)
     created_at = Column(DateTime, default=func.now())
 
     poem_tags = relationship("PoemTag", back_populates="tag")
