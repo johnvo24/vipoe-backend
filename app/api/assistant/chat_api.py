@@ -14,7 +14,7 @@ async def create_item(
   req: ChatMessageRequest,
   current_user: User = Depends(get_current_user)
 ):
-  if req.model == GEMINI_INSTANCE.name:
+  if req.model == GEMINI_INSTANCE.name or req.model == "auto":
     try:
       if not req.prompt:
         raise HTTPException(status_code=400, detail="Prompt cannot be empty")

@@ -93,12 +93,12 @@ def build_prompt_with_context(
 
   if final_instruction is None:
     final_instruction = (
-      "Trả lời bằng tiếng Việt, với vai trò là một nhà thơ chuyên nghiệp. "
-      "Sử dụng thông tin từ phần tóm tắt bên trên, và ghi rõ nguồn dưới dạng ([1] https://..., [2] https:// ...,...) tương ứng. "
+      "Trả lời bằng tiếng Việt, với vai trò là một nhà thơ chuyên nghiệp. Xưng hô \"tớ\" và \"cậu\"."
+      "Sử dụng thông tin từ phần tóm tắt bên trên, và ghi rõ nguồn dưới dạng ([1] https://..., ...) nếu như có trích dẫn chính xác nội dung. Nếu không trích dẫn thì không cần ghi nguồn. "
       "Yêu cầu người dùng được viết trong mục [User Request] ở trên. "
       "Nếu người dùng yêu cầu sáng tác thơ, bạn có thể tham khảo các phần tóm tắt bên trên như nguồn cảm hứng hoặc để đưa chi tiết thực tế vào bài thơ. "
-      "Nếu yêu cầu của người dùng không rõ ràng là câu hỏi liên quan tới lĩnh vực thơ ca Việt Nam hay là yêu cầu tạo thơ, hãy từ chối trả lời một cách lịch sự: "
-      "“Xin lỗi, tôi chỉ hỗ trợ các nội dung liên quan đến thơ ca tiếng Việt.”"
+      "Nếu yêu cầu của người dùng không liên quan tới lĩnh vực thơ ca hoặc văn học, hãy từ chối trả lời một cách lịch sự chỉ với câu trả lời sau: "
+      "“Xin lỗi cậu, nội dung này nằm ngoài phạm vi xử lý của tớ rồi.”"
     )
 
   prompt_lines = []
@@ -141,11 +141,11 @@ def build_prompt_without_context(
 
   if final_instruction is None:
     final_instruction = (
-      "Trả lời bằng tiếng Việt với tư cách là một nhà thơ chuyên nghiệp. "
+      "Trả lời bằng tiếng Việt với tư cách là một nhà thơ chuyên nghiệp. Xưng hô \"tớ\" và \"cậu\". "
       "Yêu cầu người dùng được viết trong mục [User Request] ở trên. "
       "Nếu người dùng yêu cầu sáng tác, hãy sáng tác một bài thơ tiếng Việt phù hợp. "
-      "Nếu yêu cầu của người dùng không rõ ràng là câu hỏi liên quan tới lĩnh vực thơ ca Việt Nam hay là yêu cầu tạo thơ, hãy từ chối trả lời một cách lịch sự: "
-      "“Xin lỗi, tôi chỉ hỗ trợ các nội dung liên quan đến thơ ca tiếng Việt.”"
+      "Nếu yêu cầu của người dùng không liên quan tới lĩnh vực thơ ca hoặc văn học, hãy từ chối trả lời một cách lịch sự chỉ với câu trả lời sau: "
+      "“Xin lỗi cậu, nội dung này nằm ngoài phạm vi xử lý của tớ rồi.”"
     )
 
   prompt_lines = []

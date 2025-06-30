@@ -5,7 +5,7 @@ class Gemini():
   def __init__(self, api_key):
     self.name = "gemini-1.5-flash"
     genai.configure(api_key=api_key)
-    self.model = genai.GenerativeModel("gemini-1.5-flash")
+    self.model = genai.GenerativeModel("gemini-2.0-flash") # gemini-1.5-flash | gemini-2.0-flash
     
   def __generate__(self, prompt: str):
     result = self.model.generate_content(f"{prompt}")
