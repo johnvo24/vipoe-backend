@@ -1,4 +1,5 @@
 from fastapi.middleware.cors import CORSMiddleware
+from app.core.config import settings
 
 def setup_cors(app, base_url):
   app.add_middleware(
@@ -8,3 +9,4 @@ def setup_cors(app, base_url):
     allow_methods=["*"],
     allow_headers=["*"],
   )
+  print(f"------------------{settings.DATABASE_URL}")
