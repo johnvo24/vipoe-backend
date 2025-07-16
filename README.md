@@ -6,7 +6,7 @@ A **FastAPI** backend service for the **Vietnamese Poetry Web Platform with AI A
 
 ## 🌸 Overview
 
-**VIPOE** (Vietnamese Poetry) is a platform for poetry lovers to create, explore, and engage with traditional and modern Vietnamese poetry. The system leverages **Google Gemini AI** and **web RAG (Retrieval-Augmented Generation)** to guide users in poetic creation and literary exploration.
+**VIPOE** is a platform for poetry lovers to create, explore, and engage with traditional and modern Vietnamese poetry. The system leverages **Google Gemini AI** and **web RAG (Retrieval-Augmented Generation)** to guide users in poetic creation and literary exploration.
 
 ---
 
