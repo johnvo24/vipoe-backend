@@ -9,4 +9,3 @@ def setup_cors(app, base_url):
     allow_methods=["*"],
     allow_headers=["*"],
   )
-  print(f"------------------{settings.DATABASE_URL}")

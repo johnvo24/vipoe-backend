@@ -7,8 +7,8 @@ from app.schemas.token import TokenResponse
 from app.schemas.user import UserCreate, UserRead
 from app.database import get_db
 from app.services.email_service import send_verification_email, create_email_verification_token
-from app.utils.hash_utils import hash_password, verify_password
-from app.utils.jwt_utils import create_jwt_token
+from app.core.security.bcrypt_hashing import hash_password, verify_password
+from app.core.security.jwt import create_jwt_token
 from app.core.config import settings
 
 router = APIRouter()

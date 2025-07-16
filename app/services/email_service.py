@@ -1,7 +1,7 @@
 import smtplib
 from email.mime.text import MIMEText
 from datetime import timedelta
-from app.utils.jwt_utils import create_jwt_token, decode_and_verify_token
+from app.core.security.jwt import create_jwt_token, decode_and_verify_token
 from app.core.config import settings
 
 def send_verification_email(email: str, token: str):
