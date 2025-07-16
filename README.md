@@ -1,6 +1,6 @@
 # VIPOE BACKEND
 
-A **FastAPI** backend service for the **Vietnamese Poetry Platform – VIPOE**, combining traditional Vietnamese poetry creation with modern **AI assistance** and **web search capabilities**.
+A **FastAPI** backend service for the **Vietnamese Poetry Web Platform with AI Assistance – VIPOE**, combining traditional Vietnamese poetry creation with modern **AI assistance** and **web search capabilities**.
 
 ---
 
