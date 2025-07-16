@@ -12,14 +12,14 @@ class UserCreate(BaseModel):
 
   @validator("full_name", "username", pre=True)
   def strip_whitespace(cls, v):
-      return v.strip() if isinstance(v, str) else v
+    return v.strip() if isinstance(v, str) else v
 
   @validator("password")
   def validate_password(cls, v):
-      pattern = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$")
-      if not pattern.match(v):
-          raise ValueError("Password must contain at least one uppercase, one lowercase, one number, and one special character.")
-      return v
+    pattern = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$")
+    if not pattern.match(v):
+      raise ValueError("Password must contain at least one uppercase, one lowercase, one number, and one special character.")
+    return v
 
 class UserRead(BaseModel):
   id: int

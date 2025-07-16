@@ -56,7 +56,17 @@ def search_poems(
         query = query.join(PoemTag, Poem.poem_tags).join(Tag).filter(Tag.name == tag_name)
 
   poems = query.order_by(Poem.created_at.desc()).offset(offset).limit(limit).all()
-  return [build_poem_response(poem, current_user_optional) for poem in poems]
+  
+  if not current_user_optional:
+    return [build_poem_response(poem) for poem in poems]
+    
+  poem_ids = [poem.id for poem in poems]
+  saved_poems = db.query(CollectionPoem.poem_id).filter(
+    CollectionPoem.user_id == current_user_optional.id,
+    CollectionPoem.poem_id.in_(poem_ids)
+  ).all()
+  saved_poems = [sp.poem_id for sp in saved_poems]
+  return [build_poem_response(poem, is_saved = (poem.id in saved_poems)) for poem in poems]
 
 @router.get("/feed", response_model=List[PoemResponse])
 def get_poem_feed(
@@ -91,7 +101,6 @@ def get_my_poems(
   current_user: User = Depends(get_current_user),
   offset: int = 0,
   limit: int = 20,
-  current_user_optional: User = Depends(get_current_user_optional)
 ):
   poems = (
     db.query(Poem).options(
@@ -102,4 +111,12 @@ def get_my_poems(
     .limit(limit)
     .all()
   )
-  return [build_poem_response(poem, current_user_optional) for poem in poems]
+  if not poems:
+    return []
+  poem_ids = [poem.id for poem in poems]
+  saved_poems = db.query(CollectionPoem.poem_id).filter(
+    CollectionPoem.user_id == current_user.id,
+    CollectionPoem.poem_id.in_(poem_ids)
+  ).all()
+  saved_poems = [sp.poem_id for sp in saved_poems]
+  return [build_poem_response(poem, is_saved = (poem.id in saved_poems)) for poem in poems]

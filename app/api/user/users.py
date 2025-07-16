@@ -5,7 +5,7 @@ from app.database import get_db
 from app.models import User
 from app.schemas.user import UserUpdate, UserRead
 from app.utils.cloud_utils import upload_image_to_cloud
-from app.utils.jwt_utils import create_jwt_token
+from app.core.security.jwt import create_jwt_token
 from app.auth.dependencies import get_current_user
 
 router = APIRouter()
