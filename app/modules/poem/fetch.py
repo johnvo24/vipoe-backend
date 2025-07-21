@@ -3,7 +3,7 @@ from unittest import case
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session, joinedload
 from app.auth.dependencies import get_current_user, get_current_user_optional
-from app.database import get_db
+from app.core.database import get_db
 from app.models.collection_poem import CollectionPoem
 from app.models.poem import PoemLike
 from app.models.user import User

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.models import User
 from app.schemas.token import TokenResponse
 from app.schemas.user import UserCreate, UserRead
-from app.database import get_db
+from app.core.database import get_db
 from app.services.email_service import send_verification_email, create_email_verification_token
 from app.core.security.bcrypt_hashing import hash_password, verify_password
 from app.core.security.jwt import create_jwt_token
@@ -50,7 +50,6 @@ def verify_email(token: str, db: Session = Depends(get_db)):
   db.commit()
   db.refresh(user)
   return user
-
 
 @router.post("/login", response_model=TokenResponse)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):

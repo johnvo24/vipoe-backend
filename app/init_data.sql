@@ -32,25 +32,25 @@ INSERT INTO genres (name, description, created_at) VALUES
   ('Thể loại khác (thơ)', 'Các thể thơ không phân loại rõ.', NOW()),
   ('Thể loại khác (ngoài thơ)', 'Văn học phi thơ.', NOW());
 
--- Tags phổ biến
-INSERT INTO tags (name, created_at) VALUES
-  ('quê hương', NOW()),
-  ('tình yêu', NOW()),
-  ('gia đình', NOW()),
-  ('bạn bè', NOW()),
-  ('mùa xuân', NOW()),
-  ('mùa hạ', NOW()),
-  ('mùa thu', NOW()),
-  ('mùa đông', NOW()),
-  ('biển', NOW()),
-  ('núi', NOW()),
-  ('học trò', NOW()),
-  ('tuổi thơ', NOW()),
-  ('lãng mạn', NOW()),
-  ('buồn', NOW()),
-  ('vui', NOW()),
-  ('suy ngẫm', NOW()),
-  ('cuộc sống', NOW()),
-  ('thiên nhiên', NOW()),
-  ('châm biếm', NOW()),
-  ('lịch sử', NOW());
+-- -- Tags phổ biến
+-- INSERT INTO tags (name, created_at) VALUES
+--   ('quê hương', NOW()),
+--   ('tình yêu', NOW()),
+--   ('gia đình', NOW()),
+--   ('bạn bè', NOW()),
+--   ('mùa xuân', NOW()),
+--   ('mùa hạ', NOW()),
+--   ('mùa thu', NOW()),
+--   ('mùa đông', NOW()),
+--   ('biển', NOW()),
+--   ('núi', NOW()),
+--   ('học trò', NOW()),
+--   ('tuổi thơ', NOW()),
+--   ('lãng mạn', NOW()),
+--   ('buồn', NOW()),
+--   ('vui', NOW()),
+--   ('suy ngẫm', NOW()),
+--   ('cuộc sống', NOW()),
+--   ('thiên nhiên', NOW()),
+--   ('châm biếm', NOW()),
+--   ('lịch sử', NOW());

@@ -2,7 +2,7 @@ from sqlalchemy import Column, DateTime, Integer, ForeignKey
 from sqlalchemy.sql import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from app.database import Base
+from app.core.database import Base
 
 class CollectionPoem(Base):
     __tablename__ = "collection_poems"

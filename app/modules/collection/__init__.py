@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.collection import crud, fetch
+from app.modules.collection import crud, fetch
 
 router = APIRouter()
 

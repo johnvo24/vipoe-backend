@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api import collection, poem, user, assistant
+from app.modules import collection, poem, user, assistant
 
 router = APIRouter()
 

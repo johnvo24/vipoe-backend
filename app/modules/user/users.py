@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlalchemy.orm import Session
-from app.database import get_db
+from app.core.database import get_db
 from app.models import User
 from app.schemas.user import UserUpdate, UserRead
 from app.utils.cloud_utils import upload_image_to_cloud

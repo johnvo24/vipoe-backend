@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from sqlalchemy.orm import Session, joinedload
-from app.database import get_db
+from app.core.database import get_db
 from app.schemas.poem import PoemResponse
 from app.models import Poem, PoemTag, User
 from app.auth.dependencies import get_current_user

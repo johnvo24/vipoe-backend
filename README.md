@@ -53,6 +53,7 @@ A **FastAPI** backend service for the **Vietnamese Poetry Platform – VIPOE**, 
 
 ## 🧩 API Structure
 
+```text
 /api/v1/
 ├── auth/ # Auth routes
 │ ├── register
@@ -69,6 +70,7 @@ A **FastAPI** backend service for the **Vietnamese Poetry Platform – VIPOE**, 
 │ └── /
 └── assistant/ # AI assistant
 └── /chat
+```
 
 ---
 
