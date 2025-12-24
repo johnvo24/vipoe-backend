@@ -59,8 +59,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
   ).first()
   if not user or not verify_password(form_data.password, user.password):
     raise HTTPException(status_code=401, detail="Invalid credentials")
-  if not user.is_verified:
-    raise HTTPException(status_code=403, detail="Email not verified")
+  # if not user.is_verified:
+  #   raise HTTPException(status_code=403, detail="Email not verified")
   access_token = create_jwt_token(
     payload={"sub": user.username},
     secret_key=settings.SECRET_KEY,

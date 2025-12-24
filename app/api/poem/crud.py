@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File,
 from sqlalchemy.orm import Session, joinedload
 from app.database import get_db
 from app.schemas.poem import PoemResponse
-from app.models import Poem, PoemTag, User
+from app.models import Poem, PoemTag, User, PoemLike
 from app.auth.dependencies import get_current_user
 from app.services.poem_service import build_poem_response, handle_tags
 from app.utils.cloud_utils import upload_image_to_cloud
@@ -39,7 +39,7 @@ async def create_poem(
   handle_tags(db, poem.id, tags)
   db.commit()
   db.refresh(poem)
-  return build_poem_response(poem)
+  return build_poem_response(poem, like_count=0, is_saved=False, is_liked=False)
 
 @router.get("/{poem_id}", response_model=PoemResponse)
 def get_poem(
@@ -55,7 +55,7 @@ def get_poem(
   )
   if not poem:
     raise HTTPException(status_code=404, detail="Poem not found")
-  return build_poem_response(poem)
+  return build_poem_response(poem, like_count=0, is_saved=False, is_liked=False)
 
 @router.put("/{poem_id}", response_model=PoemResponse)
 async def update_poem(
@@ -88,7 +88,7 @@ async def update_poem(
   poem.updated_at = datetime.now(timezone.utc)
   db.commit()
   db.refresh(poem)
-  return build_poem_response(poem)
+  return build_poem_response(poem, like_count=0, is_saved=False, is_liked=False)
 
 @router.delete("/{poem_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_poem(
@@ -100,5 +100,32 @@ def delete_poem(
   if not poem:
       raise HTTPException(status_code=404, detail="Poem not found")
   db.delete(poem)
+  db.commit()
+  return
+
+@router.post("/{poem_id}/like", status_code=status.HTTP_201_CREATED)
+def like_poem(
+  poem_id: int,
+  db: Session = Depends(get_db),
+  current_user: User = Depends(get_current_user)
+):
+  exists = db.query(PoemLike).filter_by(user_id=current_user.id, poem_id=poem_id).first()
+  if exists:
+    raise HTTPException(status_code=400, detail="Poem already liked")
+  like = PoemLike(user_id=current_user.id, poem_id=poem_id)
+  db.add(like)
+  db.commit()
+  return {"message": "Liked"}
+
+@router.delete("/{poem_id}/like", status_code=status.HTTP_204_NO_CONTENT)
+def unlike_poem(
+  poem_id: int,
+  db: Session = Depends(get_db),
+  current_user: User = Depends(get_current_user)
+):
+  like = db.query(PoemLike).filter_by(user_id=current_user.id, poem_id=poem_id).first()
+  if not like:
+    raise HTTPException(status_code=404, detail="Like not found")
+  db.delete(like)
   db.commit()
   return

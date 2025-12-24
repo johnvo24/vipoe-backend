@@ -41,6 +41,8 @@ class PoemResponse(PoemBaseResponse):
   genre_name: str
   tags: List[TagResponse] = []
   is_saved: bool = False
+  like_count: int = 0
+  is_liked: bool = False
 
   class Config:
     orm_mode = True
