@@ -39,7 +39,7 @@ async def create_poem(
   handle_tags(db, poem.id, tags)
   db.commit()
   db.refresh(poem)
-  return build_poem_response(poem, like_count=0, is_saved=False, is_liked=False)
+  return build_poem_response(poem, like_count=0, is_saved=False, is_liked=False, comment_count=0)
 
 @router.get("/{poem_id}", response_model=PoemResponse)
 def get_poem(
@@ -55,7 +55,7 @@ def get_poem(
   )
   if not poem:
     raise HTTPException(status_code=404, detail="Poem not found")
-  return build_poem_response(poem, like_count=0, is_saved=False, is_liked=False)
+  return build_poem_response(poem, like_count=0, is_saved=False, is_liked=False, comment_count=0)
 
 @router.put("/{poem_id}", response_model=PoemResponse)
 async def update_poem(
@@ -88,7 +88,7 @@ async def update_poem(
   poem.updated_at = datetime.now(timezone.utc)
   db.commit()
   db.refresh(poem)
-  return build_poem_response(poem, like_count=0, is_saved=False, is_liked=False)
+  return build_poem_response(poem, like_count=0, is_saved=False, is_liked=False, comment_count=0)
 
 @router.delete("/{poem_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_poem(

@@ -43,6 +43,7 @@ class PoemResponse(PoemBaseResponse):
   is_saved: bool = False
   like_count: int = 0
   is_liked: bool = False
+  comment_count: int = 0
 
   class Config:
     orm_mode = True

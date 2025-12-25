@@ -26,7 +26,8 @@ def build_poem_response(
   poem: Any, 
   like_count: int,
   is_saved = False,
-  is_liked = False
+  is_liked = False,
+  comment_count: int = 0
 ) -> PoemResponse:
   return PoemResponse(
     id = poem.id,
@@ -48,4 +49,5 @@ def build_poem_response(
     is_saved = is_saved,
     like_count = like_count,
     is_liked = is_liked,
+    comment_count = comment_count,
   )

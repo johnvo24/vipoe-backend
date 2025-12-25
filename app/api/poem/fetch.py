@@ -6,6 +6,7 @@ from app.auth.dependencies import get_current_user, get_current_user_optional
 from app.database import get_db
 from app.models.collection_poem import CollectionPoem
 from app.models.poem import PoemLike
+from app.models.comment import Comment
 from app.models.user import User
 from app.schemas.poem import PoemBaseResponse, PoemResponse, GenreResponse, TagResponse
 from app.models import Poem, Genre, Tag, PoemTag
@@ -66,6 +67,14 @@ def search_poems(
     .all()
   )
   
+  # Luôn tính comment_counts (công khai)
+  comment_counts = dict(
+    db.query(Comment.poem_id, func.count(Comment.id))
+    .filter(Comment.poem_id.in_(poem_ids))
+    .group_by(Comment.poem_id)
+    .all()
+  )
+  
   saved_poems = []
   liked_poems = []
   if current_user_optional:
@@ -81,7 +90,7 @@ def search_poems(
     saved_poems = [sp.poem_id for sp in saved_poems]
     liked_poems = [lp.poem_id for lp in liked_poems]
   
-  return [build_poem_response(poem, like_count = like_counts.get(poem.id, 0), is_saved = poem.id in saved_poems, is_liked = poem.id in liked_poems) for poem in poems]
+  return [build_poem_response(poem, like_count = like_counts.get(poem.id, 0), is_saved = poem.id in saved_poems, is_liked = poem.id in liked_poems, comment_count = comment_counts.get(poem.id, 0)) for poem in poems]
 
 @router.get("/feed", response_model=List[PoemResponse])
 def get_poem_feed(
@@ -103,6 +112,14 @@ def get_poem_feed(
     .all()
   )
   
+  # Luôn tính comment_counts (công khai)
+  comment_counts = dict(
+    db.query(Comment.poem_id, func.count(Comment.id))
+    .filter(Comment.poem_id.in_(poem_ids))
+    .group_by(Comment.poem_id)
+    .all()
+  )
+  
   saved_poems = []
   liked_poems = []
   if current_user_optional:
@@ -118,7 +135,7 @@ def get_poem_feed(
     saved_poems = [sp.poem_id for sp in saved_poems]
     liked_poems = [lp.poem_id for lp in liked_poems]
   
-  return [build_poem_response(poem, like_count = like_counts.get(poem.id, 0), is_saved = poem.id in saved_poems, is_liked = poem.id in liked_poems) for poem in poems]
+  return [build_poem_response(poem, like_count = like_counts.get(poem.id, 0), is_saved = poem.id in saved_poems, is_liked = poem.id in liked_poems, comment_count = comment_counts.get(poem.id, 0)) for poem in poems]
 
 @router.get("/", response_model=List[PoemResponse])
 def get_my_poems(
@@ -148,7 +165,13 @@ def get_my_poems(
     .group_by(PoemLike.poem_id)
     .all()
   )
+  comment_counts = dict(
+    db.query(Comment.poem_id, func.count(Comment.id))
+    .filter(Comment.poem_id.in_(poem_ids))
+    .group_by(Comment.poem_id)
+    .all()
+  )
   saved_poems = [sp.poem_id for sp in saved_poems]
   liked_poems = [lp.poem_id for lp in liked_poems]
   
-  return [build_poem_response(poem, like_count = like_counts.get(poem.id, 0), is_saved = poem.id in saved_poems, is_liked = poem.id in liked_poems) for poem in poems]
+  return [build_poem_response(poem, like_count = like_counts.get(poem.id, 0), is_saved = poem.id in saved_poems, is_liked = poem.id in liked_poems, comment_count = comment_counts.get(poem.id, 0)) for poem in poems]
