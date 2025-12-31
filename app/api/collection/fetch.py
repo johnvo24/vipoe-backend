@@ -29,4 +29,4 @@ def get_poems_in_collection(
     .limit(limit)
     .all()
   )
-  return [build_poem_response(poem, is_saved=True) for poem in poems]
+  return [build_poem_response(poem, like_count=0, is_saved=True, is_liked=False, comment_count=0) for poem in poems]

@@ -1,7 +1,8 @@
 from typing import Any
-from app.models import Tag, PoemTag
+from app.models import Tag, PoemTag, PoemLike
 from app.schemas.poem import PoemResponse, TagResponse
 from sqlalchemy.orm import Session
+from app.models.user import User
 
 def handle_tags(db: Session, poem_id: int, tags: str):
   tag_list = [t.strip() for t in tags.split("#") if t.strip()]
@@ -21,7 +22,14 @@ def handle_tags(db: Session, poem_id: int, tags: str):
       tag_objs.append(tag)
   return tag_objs
 
-def build_poem_response(poem: Any, is_saved = False) -> PoemResponse:
+def build_poem_response(
+  poem: Any, 
+  like_count: int,
+  is_saved = False,
+  is_liked = False,
+  comment_count: int = 0,
+  save_count: int = 0
+) -> PoemResponse:
   return PoemResponse(
     id = poem.id,
     genre_id = poem.genre.id,
@@ -40,4 +48,8 @@ def build_poem_response(poem: Any, is_saved = False) -> PoemResponse:
     updated_at = poem.updated_at,
     tags = [TagResponse.model_validate(pt.tag) for pt in poem.poem_tags],
     is_saved = is_saved,
+    like_count = like_count,
+    is_liked = is_liked,
+    comment_count = comment_count,
+    save_count = save_count,
   )

@@ -41,6 +41,27 @@ class PoemResponse(PoemBaseResponse):
   genre_name: str
   tags: List[TagResponse] = []
   is_saved: bool = False
+  like_count: int = 0
+  is_liked: bool = False
+  comment_count: int = 0
+  save_count: int = 0
+
+  class Config:
+    orm_mode = True
+    from_attributes = True
+
+class CommentCreate(BaseModel):
+  content: str
+
+class CommentResponse(BaseModel):
+  id: int
+  user_id: int
+  poem_id: int
+  content: str
+  created_at: datetime
+  user_name: str
+  full_name: str
+  avt_url: Optional[str] = None
 
   class Config:
     orm_mode = True
