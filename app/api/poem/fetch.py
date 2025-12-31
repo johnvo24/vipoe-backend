@@ -119,6 +119,13 @@ def get_poem_feed(
     .group_by(Comment.poem_id)
     .all()
   )
+
+  save_counts = dict(
+    db.query(CollectionPoem.poem_id, func.count(CollectionPoem.id))
+    .filter(CollectionPoem.poem_id.in_(poem_ids))
+    .group_by(CollectionPoem.poem_id)
+    .all()
+  )
   
   saved_poems = []
   liked_poems = []
@@ -135,7 +142,7 @@ def get_poem_feed(
     saved_poems = [sp.poem_id for sp in saved_poems]
     liked_poems = [lp.poem_id for lp in liked_poems]
   
-  return [build_poem_response(poem, like_count = like_counts.get(poem.id, 0), is_saved = poem.id in saved_poems, is_liked = poem.id in liked_poems, comment_count = comment_counts.get(poem.id, 0)) for poem in poems]
+  return [build_poem_response(poem, like_count = like_counts.get(poem.id, 0), is_saved = poem.id in saved_poems, is_liked = poem.id in liked_poems, comment_count = comment_counts.get(poem.id, 0), save_count=save_counts.get(poem.id, 0)) for poem in poems]
 
 @router.get("/", response_model=List[PoemResponse])
 def get_my_poems(
