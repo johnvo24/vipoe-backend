@@ -1,0 +1,127 @@
+@startuml Class Diagram
+
+class User {
+    + id: Integer
+    + full_name: String
+    + username: String
+    + email: String
+    + password: String
+    + avt_url: String
+    + bio: Text
+    + phone: String
+    + location: String
+    + date_of_birth: DateTime
+    + is_verified: Boolean
+    + verification_token: String
+    + role: String
+    + created_at: DateTime
+    + updated_at: DateTime
+    + last_login: DateTime
+}
+
+class Poem {
+    + id: Integer
+    + genre_id: Integer
+    + user_id: Integer
+    + prompt: Text
+    + title: String
+    + image_url: String
+    + content: Text
+    + note: Text
+    + is_public: Boolean
+    + created_at: DateTime
+    + updated_at: DateTime
+}
+
+class Genre {
+    + id: Integer
+    + name: String
+    + description: Text
+    + created_at: DateTime
+}
+
+class Tag {
+    + id: Integer
+    + name: String
+    + created_at: DateTime
+}
+
+class PoemTag {
+    + id: Integer
+    + poem_id: Integer
+    + tag_id: Integer
+    + created_at: DateTime
+}
+
+class PoemLike {
+    + id: Integer
+    + user_id: Integer
+    + poem_id: Integer
+    + created_at: DateTime
+}
+
+class Comment {
+    + id: Integer
+    + user_id: Integer
+    + poem_id: Integer
+    + content: Text
+    + created_at: DateTime
+}
+
+class Notification {
+    + id: Integer
+    + user_id: Integer
+    + title: String
+    + message: Text
+    + is_read: Boolean
+    + created_at: DateTime
+}
+
+class Report {
+    + id: Integer
+    + reporter_id: Integer
+    + poem_id: Integer
+    + reason: Text
+    + status: String
+    + created_at: DateTime
+}
+
+class CollectionPoem {
+    + id: Integer
+    + user_id: Integer
+    + poem_id: Integer
+    + created_at: DateTime
+}
+
+User ||--o{ Poem : creates
+User ||--o{ Comment : writes
+User ||--o{ PoemLike : likes
+User ||--o{ CollectionPoem : collects
+User ||--o{ Report : reports
+User ||--o{ Notification : receives
+
+Poem ||--|| Genre : belongs to
+Poem ||--o{ Comment : has
+Poem ||--o{ PoemLike : has
+Poem ||--o{ PoemTag : has
+Poem ||--o{ Report : has
+Poem ||--o{ CollectionPoem : in
+
+PoemTag }o--|| Poem
+PoemTag }o--|| Tag
+
+PoemLike }o--|| Poem
+PoemLike }o--|| User
+
+Comment }o--|| Poem
+Comment }o--|| User
+
+Notification }o--|| User
+
+Report }o--|| User : reporter
+Report }o--|| Poem
+
+CollectionPoem }o--|| User
+CollectionPoem }o--|| Poem
+
+@enduml
