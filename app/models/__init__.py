@@ -6,3 +6,4 @@ from app.models.collection_poem import CollectionPoem
 from app.models.tag import Tag
 from app.models.report import Report
 from app.models.notification import Notification
+from app.models.follow import Follow
