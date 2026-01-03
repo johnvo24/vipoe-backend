@@ -51,3 +51,20 @@ class UserUpdate(BaseModel):
 
   class Config:
     orm_mode = True
+
+class FollowCreate(BaseModel):
+    followed_id: int
+
+class FollowResponse(BaseModel):
+    id: int
+    follower_id: int
+    followed_id: int
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+class UserWithFollowInfo(UserRead):
+    is_following: bool = False
+    followers_count: int = 0
+    following_count: int = 0

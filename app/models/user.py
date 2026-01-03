@@ -30,4 +30,8 @@ class User(Base):
     reports = relationship("Report", back_populates="reporter")
     notifications = relationship("Notification", back_populates="user")
 
+    # Follow relationships
+    following = relationship("Follow", foreign_keys="[Follow.follower_id]", back_populates="follower")
+    followers = relationship("Follow", foreign_keys="[Follow.followed_id]", back_populates="followed")
+
 
