@@ -11,6 +11,24 @@ from app.api.user.follow import follow_user, unfollow_user, get_followers, get_f
 
 router = APIRouter()
 
+@router.get("/profile", response_model=UserWithFollowInfo)
+def get_my_profile(
+  db: Session = Depends(get_db),
+  current_user: User = Depends(get_current_user)
+):
+  user = db.query(User).filter(User.id == current_user.id).first()
+  if not user:
+    raise HTTPException(status_code=404, detail="User not found")
+  
+  followers_count = get_followers_count(db, current_user.id)
+  following_count = get_following_count(db, current_user.id)
+  
+  return UserWithFollowInfo(
+    **user.__dict__,
+    followers_count=followers_count,
+    following_count=following_count
+  )
+
 @router.put("/profile", response_model=UserRead)
 def update_profile(
   update_data: UserUpdate,
@@ -86,25 +104,17 @@ def get_user_following(
 
 @router.get("/{user_id}", response_model=UserWithFollowInfo)
 def get_user_profile(
-  user_id: str,
+  user_id: int,
   db: Session = Depends(get_db),
   current_user: User = Depends(get_current_user)
 ):
-  if user_id == "me":
-    target_user_id = current_user.id
-  else:
-    try:
-      target_user_id = int(user_id)
-    except ValueError:
-      raise HTTPException(status_code=400, detail="Invalid user_id")
-  
-  user = db.query(User).filter(User.id == target_user_id).first()
+  user = db.query(User).filter(User.id == user_id).first()
   if not user:
     raise HTTPException(status_code=404, detail="User not found")
   
-  is_following_user = is_following(db, current_user.id, target_user_id)
-  followers_count = get_followers_count(db, target_user_id)
-  following_count = get_following_count(db, target_user_id)
+  is_following_user = is_following(db, current_user.id, user_id)
+  followers_count = get_followers_count(db, user_id)
+  following_count = get_following_count(db, user_id)
   
   return UserWithFollowInfo(
     **user.__dict__,
