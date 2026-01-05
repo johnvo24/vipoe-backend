@@ -54,3 +54,9 @@ INSERT INTO tags (name, created_at) VALUES
   ('thiên nhiên', NOW()),
   ('châm biếm', NOW()),
   ('lịch sử', NOW());
+
+-- Admin account
+UPDATE users
+SET role = 'admin',
+    is_verified = true
+WHERE id = 5;

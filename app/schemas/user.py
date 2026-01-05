@@ -31,10 +31,10 @@ class UserRead(BaseModel):
   phone: Optional[str] = None
   location: Optional[str] = None
   date_of_birth: Optional[datetime] = None
-  is_verified: bool
+  is_verified: Optional[bool] = False
   role: str
-  created_at: datetime
-  updated_at: datetime
+  created_at: Optional[datetime] = None
+  updated_at: Optional[datetime] = None
   last_login: Optional[datetime] = None
 
   class Config:
@@ -68,3 +68,18 @@ class UserWithFollowInfo(UserRead):
     is_following: bool = False
     followers_count: int = 0
     following_count: int = 0
+
+class UserAdminUpdate(BaseModel):
+  full_name: Optional[str] = Field(None, min_length=1, max_length=100)
+  username: Optional[str] = Field(None, min_length=6, max_length=16, pattern=r"^[a-zA-Z0-9_]+$")
+  email: Optional[EmailStr] = None
+  avt_url: Optional[str] = None
+  bio: Optional[str] = None
+  phone: Optional[str] = None
+  location: Optional[str] = None
+  date_of_birth: Optional[datetime] = None
+  is_verified: Optional[bool] = None
+  role: Optional[str] = None
+
+  class Config:
+    orm_mode = True

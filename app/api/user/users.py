@@ -122,25 +122,3 @@ def get_user_profile(
     followers_count=followers_count,
     following_count=following_count
   )
-
-# @router.get("/show-writers", response_model=list[ShowWriterResponse])
-# async def get_all_writers(
-#   db: Session = Depends(get_db)
-# ):
-#   writers = (
-#     db.query(
-#       User.id.label("user_id"),
-#       User.full_name.label("full_name")
-#     ).all()
-#   )
-
-#   result = [
-#     {
-#       "user_id": item.user_id,
-#       "full_name": item.full_name,
-#       "avatar": "https://upload.wikimedia.org/wikipedia/commons/2/21/Johnny_Depp_2020.jpg"
-#     }
-#     for item in writers
-#   ]
-
-#   return result
