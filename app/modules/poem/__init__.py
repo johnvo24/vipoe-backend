@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.poem import crud, fetch, comment
+from app.modules.poem import crud, fetch, comment
 
 router = APIRouter()
 

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from app.core.config import settings
 from app.core.middlewares.cors import setup_cors
-from app.api import router
+from app.modules import router
 
 def create_app():
     app = FastAPI()
