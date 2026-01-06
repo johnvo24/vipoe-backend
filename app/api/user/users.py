@@ -3,9 +3,10 @@ from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import User
-from app.schemas.user import UserUpdate, UserRead, FollowResponse, UserWithFollowInfo
+from app.schemas.user import UserUpdate, UserRead, FollowResponse, UserWithFollowInfo, ChangePassword
 from app.utils.cloud_utils import upload_image_to_cloud
 from app.core.security.jwt import create_jwt_token
+from app.core.security.bcrypt_hashing import verify_password, hash_password
 from app.auth.dependencies import get_current_user
 from app.api.user.follow import follow_user, unfollow_user, get_followers, get_following, is_following, get_followers_count, get_following_count
 
@@ -46,6 +47,25 @@ def update_profile(
   db.commit()
   db.refresh(user)
   return user
+
+@router.put("/change-password")
+def change_password(
+  password_data: ChangePassword,
+  db: Session = Depends(get_db),
+  current_user: User = Depends(get_current_user)
+):
+  user = db.query(User).filter(User.id == current_user.id).first()
+  if not user:
+    raise HTTPException(status_code=404, detail="User not found")
+  
+  if not verify_password(password_data.old_password, user.password):
+    raise HTTPException(status_code=400, detail="Old password is incorrect")
+  
+  user.password = hash_password(password_data.new_password)
+  user.updated_at = datetime.now(timezone.utc)
+  
+  db.commit()
+  return {"message": "Password changed successfully"}
 
 @router.put("/profile/avatar", response_model=UserRead)
 async def update_avatar(

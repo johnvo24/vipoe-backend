@@ -83,3 +83,14 @@ class UserAdminUpdate(BaseModel):
 
   class Config:
     orm_mode = True
+
+class ChangePassword(BaseModel):
+  old_password: str = Field(..., min_length=8, max_length=100)
+  new_password: str = Field(..., min_length=8, max_length=100)
+
+  @validator("new_password")
+  def validate_new_password(cls, v):
+    pattern = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$")
+    if not pattern.match(v):
+      raise ValueError("Password must contain at least one uppercase, one lowercase, one number, and one special character.")
+    return v
