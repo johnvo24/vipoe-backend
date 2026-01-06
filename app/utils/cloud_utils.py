@@ -3,7 +3,9 @@ import cloudinary.uploader
 from app.core.config import settings
 
 cloudinary.config(
-  api_url=settings.CLOUDINARY_URL,
+  cloud_name=settings.CLOUDINARY_URL.split("@")[1],
+  api_key=settings.CLOUDINARY_URL.split("//")[1].split(":")[0],
+  api_secret=settings.CLOUDINARY_URL.split(":")[2].split("@")[0],
   secure=True
 )
 

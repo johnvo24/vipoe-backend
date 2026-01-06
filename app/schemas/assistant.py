@@ -2,7 +2,7 @@ from typing import Optional, List
 from pydantic import BaseModel
 
 class ChatMessageRequest(BaseModel):
-  model: str = "gemini-1.5-flash"
+  model: str = "gemini-2.5-flash"
   search_mode: bool = False
   prompt: str
 
@@ -14,6 +14,6 @@ class Step(BaseModel):
   meaning_score: Optional[bool] = None
   imagery_score: Optional[bool] = None
 
-class ChainRequest(BaseModel):
+class EditStepRequest(BaseModel):
   original_poem: str
   steps: List[Step]

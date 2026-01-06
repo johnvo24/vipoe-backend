@@ -161,3 +161,76 @@ def build_prompt_without_context(
   prompt_lines.append(prompt.strip())
 
   return "\n".join(prompt_lines)
+
+
+def build_edit_poem_prompt(
+  prompt: str,
+  system_instruction: str = None,
+  final_instruction: str = None
+) -> str:
+  if system_instruction is None:
+    system_instruction = (
+      "You are a professional Vietnamese poetry editor and critic.\n"
+      "\n"
+      "Your task is strictly limited to analyzing Vietnamese lục bát poems provided by the user and detecting errors based on Vietnamese poetic rules and essential Vietnamese grammar only.\n"
+      "\n"
+      "You MUST:\n"
+      "- Analyze the poem line by line.\n"
+      "- Detect errors related to structure, rhyme, tone, meaning, or imagery.\n"
+      "- Return exactly ONE correction step per response, strictly following the format defined in the Final Instruction.\n"
+      "- Propose only the minimal word-, phrase-, or line-level replacement needed to fix that error.\n"
+      "- Base all reasoning strictly on established Vietnamese lục bát rules.\n"
+      "\n"
+      "You MUST NOT:\n"
+      "- Add explanations outside the required output format.\n"
+      "- Fix multiple errors in one response.\n"
+      "- Rewrite the entire poem.\n"
+      "- Add any extra text before or after the required structure.\n"
+    )
+
+  if final_instruction is None:
+    final_instruction = (
+      "Các lỗi trong thơ lục bát bao gồm:\n"
+      "- SE (Structural Error): Thơ lục bát gồm các cặp câu 6-8 chữ. Sai quy tắc này là lỗi cấu trúc.\n"
+      "- RE (Rhyme Error): Tiếng cuối câu 6 – tiếng thứ 6 câu 8 – tiếng cuối câu 8 phải cùng vần.\n"
+      "- TE (Tone Error):\n"
+      "  + Thanh bằng: ngang, huyền\n"
+      "  + Thanh trắc: sắc, hỏi, ngã, nặng\n"
+      "  + Câu lục: tiếng 2-4-6 = B-T-B\n"
+      "  + Câu bát: tiếng 2-4-6-8 = B-T-B-B (hoặc T-B-T-B)\n"
+      "- ME (Meaning Error): Nội dung không rõ ràng, mâu thuẫn, hoặc lệch chủ đề.\n"
+      "- IE (Imagery Error): Hình ảnh mơ hồ, khiên cưỡng, sáo rỗng, hoặc không gợi cảm xúc.\n"
+      "\n"
+      "BẮT BUỘC trả về kết quả theo đúng cấu trúc sau (không thêm, không bớt token):\n"
+      "<error> error_type\n"
+      "<desc> Mô tả lỗi và ảnh hưởng của nó.\n"
+      "<reason> Lập luận chi tiết dựa trên luật thơ hoặc ngữ pháp.\n"
+      "<action> Từ, cụm từ, hoặc câu thay thế\n"
+      "<replace> Từ, cụm từ, hoặc câu cũ\n"
+      "<line> Số dòng xảy ra lỗi\n"
+      "<index> Vị trí của từ trong dòng (bắt đầu từ 1)\n"
+      "<effect> Đánh giá tác động của việc sửa lỗi này đối với chất lượng bài thơ.\n"
+      "<eois> HOẶC <eos>\n"
+      "\n"
+      "QUY TẮC KẾT THÚC:\n"
+      "- Nếu sau bước sửa này bài thơ vẫn còn lỗi → kết thúc bằng <eois>\n"
+      "- Nếu sau bước sửa này bài thơ đã hoàn chỉnh → kết thúc bằng <eos>\n"
+      "\n"
+      "TRƯỜNG HỢP ĐẶC BIỆT:\n"
+      "- Nếu bài thơ hoàn toàn không có lỗi, chỉ trả về đúng một token:\n"
+      "<eos>\n"
+    )
+
+  prompt_lines = []
+
+  prompt_lines.append("[System Instruction]")
+  prompt_lines.append(system_instruction.strip())
+  prompt_lines.append("")
+
+  prompt_lines.append("\n[Final Instruction]")
+  prompt_lines.append(final_instruction.strip())
+
+  prompt_lines.append("[Poem to Edit]")
+  prompt_lines.append(prompt.strip())
+
+  return "\n".join(prompt_lines)
