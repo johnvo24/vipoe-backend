@@ -8,7 +8,7 @@ from app.utils.cloud_utils import upload_image_to_cloud
 from app.core.security.jwt import create_jwt_token
 from app.core.security.bcrypt_hashing import verify_password, hash_password
 from app.auth.dependencies import get_current_user
-from app.api.user.follow import follow_user, unfollow_user, get_followers, get_following, is_following, get_followers_count, get_following_count
+from app.modules.user.follow import follow_user, unfollow_user, get_followers, get_following, is_following, get_followers_count, get_following_count
 
 router = APIRouter()
 
